@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 18 20:15:57 2020
-
-@author: anandrathi
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Tue Mar 17 22:08:41 2020
 
 @author: anandrathi
@@ -39,26 +32,7 @@ class ImgRMS:
     red_total = np.sqrt(total[ImgRMS.RED]).item()
     return (blue_total, green_total, red_total)
 
-  def all_rms(self):
-    """ all_rms :
-    the function that calculates the total rms of an image,
-    transforms it into a matriz in which each element represents
-    the values of the colors blue, green and red of each pixel,
-    it returns the rms separated by color
-
-    Returns:rms of blue, green, red
-        tuple: blue, green, red
-    """
-    image = self._rms(self.image)
-    rows,columns,channels = image.shape
-    area=rows*columns
-    #Avg along rows, cols for each channels
-    total = np.mean(image,(ImgRMS.ALONG_ROW_AXIS,ImgRMS.ALONG_COL_AXIS,))
-    #calculates the rms of every color
-    #total = (total/area)
-    return self._bgr_sqrt(total)
-
-  def rms(self, axis = ALONG_COL_AXIS):
+  def rms(self, axis = None):
     """ rms
         function that calculates the rms of an image separated
         by axis row = /column = ImgRMS.ALONG_COL_AXIS
@@ -71,9 +45,15 @@ class ImgRMS:
     rows,columns,channels = image.shape
     image = self._rms(image)
     #Sum along rows, cols for each channels
-    total = np.mean(image,axis=axis)
+    total = np.mean(image,(ImgRMS.ALONG_ROW_AXIS,ImgRMS.ALONG_COL_AXIS,))  if (axis is None) else np.mean(image,axis=axis)
     #Sum along rows (now rows previously cols)
     if not axis is None:
       bestColIdx =  np.argmax(np.sum(total,(ImgRMS.ALONG_ROW_AXIS,)))
     return self._bgr_sqrt(total) if (axis is None) else (bestColIdx,) + self._bgr_sqrt(total[bestColIdx])
 
+theinput = "C:/Users/anand/Pictures/flag.PNG"
+img1 = cv2.imread(theinput)
+robg = ImgRMS(img1)
+print( robg.rms(ImgRMS.ALONG_ROW_AXIS) )
+print( robg.rms(ImgRMS.ALONG_COL_AXIS) )
+print( robg.rms(None) )
