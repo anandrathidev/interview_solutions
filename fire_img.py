@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
-#import Exception
-
 #from math import sqrt
 #from alignment import alignImage
-
-#the function that calculates the total rms of an image, since opening an image with opencv2
-#transforms it into a matriz in wich each element represents the values of the colors blue, green and
-#red of each pixel, it returns the rms separated by color
-
-#axis for numpy
+"""
+The class that calculates the total rms of an image,
+Assume opening an image with opencv2
+transforms it into a matriz in wich each element represents the values of the colors blue, green and
+red of each pixel, it returns the rms separated by color
+axis for numpy
+"""
 
 theinput = ""
 
 class ImgRMS:
-  ALONG_ROW_AXIS=1
-  ALONG_COL_AXIS=0
-  ALONG_CHANNEL_AXIS=2
-  BLUE,GREEN,RED = 0,1,2
+
+  ALONG_ROW_AXIS, ALONG_COL_AXIS, ALONG_CHANNEL_AXIS = 1,0,2
+  BLUE, GREEN, RED = 0,1,2
+
   def __init__(self, image):
     if len(image.shape)!=3:
       raise Exception( "This is not a correct image shape")
@@ -36,13 +35,12 @@ class ImgRMS:
                       [ImgRMS.BLUE, ImgRMS.GREEN, ImgRMS.RED])))
 
   def rms(self, axis = ALONG_COL_AXIS):
-    """ rms
-        function that calculates the rms of an image separated
-        by axis row = /column = ImgRMS.ALONG_COL_AXIS
-        it returns a rms separated by color.
-
+    """ rms function that calculates the rms of an image separated
+        by axis or total. axis can be row , column or None
+    arguments:
+      axis: ALONG_ROW_AXIS/ALONG_COL_AXIS/None
     Returns:
-        tuple: best row/col , rms of blue, rms of green, rms of red
+      tuple: best row/col , rms of blue, rms of green, rms of red
     """
     if not (axis == ImgRMS.ALONG_ROW_AXIS or
             axis == ImgRMS.ALONG_COL_AXIS or
@@ -58,7 +56,7 @@ class ImgRMS:
       (best_idx,) + self._bgr_sqrt(total[best_idx])
 
 
-# though not he best place  to write unit test
+# though not he best place to put unit test
 # this should be in seperate file & test folder
 import unittest
 class Testrms(unittest.TestCase):
@@ -117,10 +115,12 @@ if __name__=="__main__":
 
 """
 My Suggestion to Data
-1. DRYOS = do not repeat yourself
-    If you are repeating any code ,
-    may be that goes into its own little function
-    method like map
+1. DRY = Dont Repeat Yourself
+    "Every piece of knowledge must have a single, unambiguous, authoritative
+    representation within a system".
+    If you are repeating any code, then that goes into its own little function
+    a. refactor code
+    b. use method like map to apply same func on data
     example see  helper func
     _rms, _bgr_sqrt
     or bvroadcast see _bgr_sqrt and other numpy methods
@@ -132,11 +132,14 @@ My Suggestion to Data
    [makes dynamic programming easyier instead of globals]
    You can take advantage of Encapsulation, Inheritance, Polymorphisim.
 
-3. Prefer numpy broadcast features to loop iteration.
+3. Prefer less lines of code is more readeable.
+   e.g use single line if,
+   avoid many variable defination by using them inline
+   use broadcast instead of loops
+
+4. Prefer numpy broadcast features to loop iteration.
    easy to read the code
    to parrelize may be in future interoperable with numba
-
-4. Prefer less lines of code is more readeable.
 
 5. PEP 8 -- Style Guide for Python Code https://www.python.org/dev/peps/pep-0008/
    Naming & spacing guidlines
@@ -151,7 +154,12 @@ My Suggestion to Data
    ALONG_CHANNEL_AXIS=2
    BLUE,GREEN,RED = 0,1,2
 
+7. check input arguments in functions/constructor
+   use @beartype / @enforce if possible for parameters type enforcement
 
-7. Always have unit test. it saves life :)
+8. General advice:
+   prefer Generators over lists etc see itertools,
+
+8. Always have unit test. it saves life :)
 
 """
