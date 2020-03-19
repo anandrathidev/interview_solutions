@@ -15,8 +15,8 @@ theinput = ""
 
 class ImgRMS:
 
-  ALONG_ROW_AXIS, ALONG_COL_AXIS, ALONG_CHANNEL_AXIS = 1,0,2
-  BLUE, GREEN, RED = 0,1,2
+  BLUE, GREEN, RED = tuple(range(3))
+  ALONG_COL_AXIS, ALONG_ROW_AXIS, ALONG_CHANNEL_AXIS = tuple(range(3))
 
   def __init__(self, image):
     if len(image.shape)!=3:
