@@ -33,23 +33,25 @@ class ImgRMS:
     return (blue_total, green_total, red_total)
 
   def rms(self, axis = None):
-    """ rms
-        function that calculates the rms of an image separated
-        by axis row = /column = ImgRMS.ALONG_COL_AXIS
+    """ rms function that calculates the rms of an image separated
+        by axis or total. axis can be row , column or None
         it returns a rms separated by color.
-
-    Returns:
-        tuple: best row/col , rms of blue, rms of green, rms of red
+    arguments:
+        axis: row, col , None 
+              ALONG_ROW_AXIS
+              ALONG_COL_AXIS
+              None: 
+    returns:
+        tuple:  (best axis , rms of blue, rms of green, rms of red)
     """
-    image=self.image
-    rows,columns,channels = image.shape
-    image = self._rms(image)
+    if not (axis == ImgRMS.ALONG_ROW_AXIS or axis == ImgRMS.ALONG_COL_AXIS or axis is None):
+      throw "valid axis values are ImgRMS.ALONG_ROW_AXIS,  ImgRMS.ALONG_COL_AXIS,  None"
     #Sum along rows, cols for each channels
-    total = np.mean(image,(ImgRMS.ALONG_ROW_AXIS,ImgRMS.ALONG_COL_AXIS,))  if (axis is None) else np.mean(image,axis=axis)
+    total = np.mean(self._rms(self.image) ,(ImgRMS.ALONG_ROW_AXIS,ImgRMS.ALONG_COL_AXIS,))  if (axis is None) else np.mean(image,axis=axis)
     #Sum along rows (now rows previously cols)
     if not axis is None:
-      bestColIdx =  np.argmax(np.sum(total,(ImgRMS.ALONG_ROW_AXIS,)))
-    return self._bgr_sqrt(total) if (axis is None) else (bestColIdx,) + self._bgr_sqrt(total[bestColIdx])
+      best_idx =  np.argmax(np.sum(total,(ImgRMS.ALONG_ROW_AXIS,)))
+    return self._bgr_sqrt(total) if (axis is None) else (best_idx,) + self._bgr_sqrt(total[best_idx])
 
 theinput = "C:/Users/anand/Pictures/flag.PNG"
 img1 = cv2.imread(theinput)
