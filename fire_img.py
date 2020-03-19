@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 17 22:08:41 2020
-
-@author: anandrathi
-"""
 import cv2
 import numpy as np
-from math import sqrt
+#import Exception
+
+#from math import sqrt
 #from alignment import alignImage
 
 #the function that calculates the total rms of an image, since opening an image with opencv2
@@ -15,47 +12,146 @@ from math import sqrt
 
 #axis for numpy
 
+theinput = ""
+
 class ImgRMS:
   ALONG_ROW_AXIS=1
   ALONG_COL_AXIS=0
   ALONG_CHANNEL_AXIS=2
   BLUE,GREEN,RED = 0,1,2
   def __init__(self, image):
+    if len(image.shape)!=3:
+      raise Exception( "This is not a correct image shape")
+    if image.shape[2]!=3:
+      raise Exception( "This image has incorrect channels (bgr)")
     self.image = image
 
   def _rms(self, image):
+    """ inner helper rms function """
     return (image.astype('float64') - 128 )**2
 
   def _bgr_sqrt(self, total):
-    blue_total = np.sqrt(total[ImgRMS.BLUE]).item()
-    green_total = np.sqrt(total[ImgRMS.GREEN]).item()
-    red_total = np.sqrt(total[ImgRMS.RED]).item()
-    return (blue_total, green_total, red_total)
+    """ inner helper to get bgr sqrt"""
+    return (tuple(map(lambda x: np.sqrt(total[x]),
+                      [ImgRMS.BLUE, ImgRMS.GREEN, ImgRMS.RED])))
 
-  def rms(self, axis = None):
-    """ rms function that calculates the rms of an image separated
-        by axis or total. axis can be row , column or None
+  def rms(self, axis = ALONG_COL_AXIS):
+    """ rms
+        function that calculates the rms of an image separated
+        by axis row = /column = ImgRMS.ALONG_COL_AXIS
         it returns a rms separated by color.
-    arguments:
-        axis: row, col , None 
-              ALONG_ROW_AXIS
-              ALONG_COL_AXIS
-              None: 
-    returns:
-        tuple:  (best axis , rms of blue, rms of green, rms of red)
+
+    Returns:
+        tuple: best row/col , rms of blue, rms of green, rms of red
     """
-    if not (axis == ImgRMS.ALONG_ROW_AXIS or axis == ImgRMS.ALONG_COL_AXIS or axis is None):
-      throw "valid axis values are ImgRMS.ALONG_ROW_AXIS,  ImgRMS.ALONG_COL_AXIS,  None"
-    #Sum along rows, cols for each channels
-    total = np.mean(self._rms(self.image) ,(ImgRMS.ALONG_ROW_AXIS,ImgRMS.ALONG_COL_AXIS,))  if (axis is None) else np.mean(image,axis=axis)
-    #Sum along rows (now rows previously cols)
+    if not (axis == ImgRMS.ALONG_ROW_AXIS or
+            axis == ImgRMS.ALONG_COL_AXIS or
+            axis is None):
+      raise Exception("valid axis values are ImgRMS.ALONG_ROW_AXIS,  \
+                      ImgRMS.ALONG_COL_AXIS,  None")
+    image = self._rms(self.image)
+    total = np.mean(image,(ImgRMS.ALONG_ROW_AXIS,ImgRMS.ALONG_COL_AXIS,)) if (axis is None) else np.mean(image,axis=axis)
+
     if not axis is None:
       best_idx =  np.argmax(np.sum(total,(ImgRMS.ALONG_ROW_AXIS,)))
-    return self._bgr_sqrt(total) if (axis is None) else (best_idx,) + self._bgr_sqrt(total[best_idx])
+    return self._bgr_sqrt(total) if (axis is None) else \
+      (best_idx,) + self._bgr_sqrt(total[best_idx])
 
-theinput = "C:/Users/anand/Pictures/flag.PNG"
-img1 = cv2.imread(theinput)
-robg = ImgRMS(img1)
-print( robg.rms(ImgRMS.ALONG_ROW_AXIS) )
-print( robg.rms(ImgRMS.ALONG_COL_AXIS) )
-print( robg.rms(None) )
+
+# though not he best place  to write unit test
+# this should be in seperate file & test folder
+import unittest
+class Testrms(unittest.TestCase):
+
+  def test_wrong_img_shape(self):
+    # test with wrong image shape
+    pix = np.array( [256,255,254] )
+    row1 = np.array( [pix , pix+1 , pix+2] )
+    with self.assertRaises(Exception):
+     ImgRMS(row1)
+
+  def test_incorrect_axis(self):
+    # test with invalid axis
+    pix = np.array( [256,255,254] )
+    row1 = np.array( [pix , pix+1 , pix+2] )
+    row2 = row1 + 1
+    row3 = row1 + 2
+    timg = np.array( [row1,row2,row3] )
+    self.assertTupleEqual(timg.shape, (3,3,3), "shape mismatch")
+    robg = ImgRMS(timg)
+    with self.assertRaises(Exception):
+      robg.rms(10)
+
+  def test_rms_calculations(self):
+    pix = np.array( [256,255,254] )
+    row1 = np.array( [pix , pix+1 , pix+2] )
+    row2 = row1 + 1
+    row3 = row1 + 2
+    timg = np.array( [row1,row2,row3] )
+    self.assertTupleEqual(timg.shape, (3,3,3), "shape mismatch")
+    robg = ImgRMS(timg)
+    a = robg.rms(None)
+    self.assertTupleEqual(a,(130.00512810398416, 129.00516785514188, 128.00520822737383) , "All RMS is wrong")
+    c = robg.rms(ImgRMS.ALONG_COL_AXIS)
+    self.assertTupleEqual(c,(2, 131.00254450455026, 130.0025640772776, 129.00258395344903) , "Col RMS is wrong")
+    r = robg.rms(ImgRMS.ALONG_ROW_AXIS)
+    self.assertTupleEqual(r,(2, 131.00254450455026, 130.0025640772776, 129.00258395344903) , "Row RMS is wrong")
+
+  def test_rms_print(self):
+    img1 = cv2.imread(theinput)
+    robg = ImgRMS(img1)
+    print( "Best Row" , robg.rms(ImgRMS.ALONG_ROW_AXIS) )
+    print( "Best Col" , robg.rms(ImgRMS.ALONG_COL_AXIS) )
+    print( "Best All" , robg.rms(None) )
+
+
+def main():
+  global theinput
+  #theinput = "C:/Users/anand/Pictures/flag.PNG"
+  theinput=str(input('full path of image file for RMS :'))
+  unittest.main(exit=False, verbosity=4)
+
+if __name__=="__main__":
+    main()
+
+
+"""
+My Suggestion to Data
+1. DRYOS = do not repeat yourself
+    If you are repeating any code ,
+    may be that goes into its own little function
+    method like map
+    example see  helper func
+    _rms, _bgr_sqrt
+    or bvroadcast see _bgr_sqrt and other numpy methods
+
+    Here I saw that we all three functions are dooing prettymuch same
+    thing and can be combined with parametyers to diffrenciate axis.
+
+2. If possible think in OOPS and encapsulate code into a unit.
+   [makes dynamic programming easyier instead of globals]
+   You can take advantage of Encapsulation, Inheritance, Polymorphisim.
+
+3. Prefer numpy broadcast features to loop iteration.
+   easy to read the code
+   to parrelize may be in future interoperable with numba
+
+4. Prefer less lines of code is more readeable.
+
+5. PEP 8 -- Style Guide for Python Code https://www.python.org/dev/peps/pep-0008/
+   Naming & spacing guidlines
+   variable names, functions use snake case
+   class names use camel case
+
+6. Instead od using MAGIC numbers like 0,1,2 for axis etc
+   define named MAGIC variables
+   e.g
+   ALONG_ROW_AXIS=1
+   ALONG_COL_AXIS=0
+   ALONG_CHANNEL_AXIS=2
+   BLUE,GREEN,RED = 0,1,2
+
+
+7. Always have unit test. it saves life :)
+
+"""
