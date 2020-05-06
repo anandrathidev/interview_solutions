@@ -1,75 +1,129 @@
+
 #include "engtext.h"
-#include  <thread>
-#include  <unordered_map>
-#include  <fstream>
-#include <experimental/string_view>
-//#include  <string_view>
-//#include  <numeric>
-//#include <parallel/numeric>
+
 #include <iostream>
-#include <algorithm>
+#include <vector>
+#include <string>
+#include <thread>
+#include <map>
+#include <set>
+#include  <fstream>
 
-fileReader::fileReader(std::string filename):m_filename(filename){
-m_data = "";
-}
-fileReader::fileReader(const fileReader& rhs)
-{
-    //std::cout << " fileReader::fileReader copy constructor " << rhs.m_filename << std::endl;
-    m_filename = rhs.m_filename;
-}
 
-fileReader::fileReader(fileReader&& rhs)
-{
-    //std::cout << " fileReader::fileReader rval copy constructor " << rhs.m_filename << std::endl;
-    m_filename = std::move(rhs.m_filename);
-}
+#ifdef WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+#include<iostream>
 
-const fileReader& fileReader::operator=(const fileReader& rhs) {
-    //std::cout << " fileReader::operator= " << rhs.m_filename << std::endl;
-    m_filename = rhs.m_filename;
-    return *this;
-}
-
-void fileReader::printMe() {
-    std::cout << "fileReader::printMe m_filename :" << m_filename << "data:"<<  m_data << std::endl;
+std::string GetCurrentWorkingDir( void ) {
+  char buff[FILENAME_MAX];
+  GetCurrentDir( buff, FILENAME_MAX );
+  std::string current_working_dir(buff);
+  return current_working_dir;
 }
 
-void fileReader::read() {
-    // read entire file into string
-    if(std::ifstream is{m_filename, std::ios::in| std::ios::ate}) {
-        auto size = is.tellg();
-        std::string str(size, '\0'); // construct string to stream size
-        is.seekg(0);
-        if(is.read(&str[0], size)) {
-            std::cerr << " fileReader::read NO data:" << str << std::endl;
+
+int printSortWordCount(const word_count_t& big_word_count, const std::string& ouffile) {
+
+
+	// Declaring the type of Predicate that accepts 2 pairs and return a bool
+	typedef std::function<bool(std::pair<string_view_t, unsigned int>, std::pair<string_view_t, unsigned int>)> Comparator;
+
+	// Defining a lambda function to compare two pairs. It will compare two pairs using second field
+	// Descending
+	Comparator compFunctor =
+			[](std::pair<string_view_t, unsigned int> elem1 ,std::pair<string_view_t, unsigned int> elem2)
+			{
+				return elem1.second > elem2.second;
+			};
+
+	// Declaring a set that will store the pairs using above comparision logic
+	std::multiset<std::pair<string_view_t, unsigned int>, Comparator> setOfWords(
+			big_word_count.begin(), big_word_count.end(), compFunctor );
+
+	// Iterate over a set using range base for loop
+	// It will display the items in sorted order of values
+	std::ofstream os{ ouffile, std::ios::out };
+	std::cout << "Writing output to : " << ouffile << std::endl;
+	for (auto element : setOfWords) {
+		os << element.second  << "\t" << element.first  << std::endl;
+	}
+
+	return 0;
+}
+
+
+
+void spawn(const std::vector <std::string> & filenames, const std::string& outfile) {
+
+    std::vector <std::thread> threads;
+    std::map <std::string, fileReader> fileReaders;
+    for(auto & filename : filenames){
+        //fileReaders[filename] = fileReader(filename);
+        std::pair<std::string, fileReader> value{ filename, filename};
+        fileReaders.emplace(value);
+        //std::cerr << " filename: " <<  filename << std::endl;
+        auto it = fileReaders.find(filename);
+        if (it != fileReaders.end()) {
+            it->second.printMe();
+            //word counts on diffrent files within diffrent threads parallel
+            //TODO Ideally I should have created a class Thread pool ... instead of processing file per Thread
+            threads.emplace_back( std::thread(&fileReader::read, &it->second ));
         } else {
-            m_data.swap(str);
+           std::cerr << " fileReaders:: error  finding " << filename <<   std::endl;
         }
     }
-    // to lower case
-    std::transform(m_data.begin(), m_data.end(), m_data.begin(),
-           [](unsigned char c) { return std::tolower(c); });
+    std::cerr << " join: " <<  threads.size() << std::endl;
+    for(unsigned int i=0; i<threads.size(); ++i){
+        threads[i].join();
+    }
 
-    splitStr("\n");
-}
+    //TODO Ideally I should have used concurrent data structures / algos like below
+    // using boost  but due to lack of time goiung for simple method
+            /*
+            concurrent_unordered_map<wstring, size_t> result;
+            for_each(begin(v), end(v), [&result](const vector<wstring>& words) {
+                parallel_for_each(begin(words), end(words), [&result](const wstring& word) {
+                    InterlockedIncrement(&result[word]);
+                });
+            });
+             */
 
-void fileReader::splitStr(std::string delims)
-{
-    string_view_t str(m_data);
-    for (auto first = str.data(), second = str.data(), last = first + str.size(); second != last && first != last; first = second + 1) {
-        second = std::find_first_of(first, last, std::cbegin(delims), std::cend(delims));
-        word_count_t::iterator iter;
-        //word_count_t::iterator lastiter;
-        if (first != second) {
-            //m_word_list.emplace_back(first, second - first);
-            string_view_t key(first, second - first);
-            iter = m_word_count.find(key);
-            if(iter == m_word_count.end()) {
-                m_word_count.insert(std::make_pair(key, 1 ));
+    //Collect all word counts from diffrent files and reduce it to global word count
+    word_count_t big_word_count;
+    word_count_t::iterator iter;
+    for(auto& afileReader : fileReaders) {
+        const word_count_t& word_count = afileReader.second.getWordCount();
+        for(auto& awordCount : word_count){
+            iter = big_word_count.find(awordCount.first);
+            if(iter == big_word_count.end()) {
+                big_word_count.insert(std::make_pair(awordCount.first, awordCount.second ));
             } else {
-                ++iter->second;
+                iter->second = iter->second + awordCount.second;
             }
         }
     }
 
+    printSortWordCount(big_word_count, outfile);
+}
+
+int main(int argc, char* argv[])
+{
+    std::cout << " CWD:" << GetCurrentWorkingDir() << std::endl;
+    std::cout << " arg:" << argc << std::endl;
+    if (argc < 2) { // We expect 3 arguments: the program name, the destination path and data files
+        std::cerr << "Usage: " << argv[0] << "SOURCE DESTINATION" << std::endl;
+        return 1;
+    }
+    std::string outfile(argv[1]);
+    std::vector <std::string> file_names;
+    for (int i = 2; i < argc; ++i) { // Remember argv[0] is the path to the program, we want from argv[1] onwards
+       std::cout << " arg :" << i  << " " << argv[i] << std::endl;
+       file_names.push_back( argv[i] ) ; // Add all but the last argument to the vector.
+    }
+    spawn( file_names, outfile );
 }
