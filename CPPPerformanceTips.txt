@@ -1,0 +1,40 @@
+Talk given by Andrei Alexandrescu
+https://cdn2-ecros.pl/event/codedive/files/presentations/2015/FastCode-handouts.pdf
+
+Choose hotspots from whole application
+Optimize hotspots outside whole application; profile again within application
+
+"""
+Which Counter to Use?
+© 2015- Andrei Alexandrescu. Do not redistribute. 23 / 80
+• Not a solved problem!
+• High resolution, high fluctuation
+◦ Windows: QueryPerformanceCounter
+◦ Linux: clock_gettime(CLOCK_REALTIME)
+• clock_getres broken on older kernels,
+upgrade
+• Low-resolution, low fluctuation
+◦ Windows: timeGetTime
+◦ Un*x: gettimeofday
+• CPU-specific (RDTSC)—beware CPU jumping
+"""
+
+Prefer static linking and PDC pos depndent code
+  inlining, whole prog optimization , local jams, 
+Prefer 64 bit code and 32 bit data
+   new intel is optimizing 64 bir code
+Prefer 32 bit array indexing to pinters
+  every 5 years it changes
+  prefer a[i] vs *p
+   prefer a[i++] to a[++i]
+   data dependency : a[i++]  inc i simultaneusly while fetching array 
+   a[++i] first inc then fetch array
+   
+Prefer regular memeory acces patterns:
+   prefetch memory in cache 
+while yoyu are iterating  forward / backward [recently ] and doing work
+it can detect and prefetch data 
+
+
+Minimize Flow avoid data dependencies 
+
