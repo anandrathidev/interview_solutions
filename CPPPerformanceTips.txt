@@ -31,10 +31,24 @@ Prefer 32 bit array indexing to pinters
    a[++i] first inc then fetch array
    
 Prefer regular memeory acces patterns:
-   prefetch memory in cache 
+   prefetch memory in cache.
 while yoyu are iterating  forward / backward [recently ] and doing work
 it can detect and prefetch data 
 
 
-Minimize Flow avoid data dependencies 
+Minimize Flow avoid data dependencies
+  flow means jumps , unpredictable jumps makes it worse.
+  data dependencies : instructable parallisim
+  
+• Use static const for all immutables
 
+◦ Beware cache issues
+• Use stack for most variables
+◦ Hot
+◦ 0-cost addressing, like struct/class fields
+• Globals: aliasing issues
+• thread_local slowest, use local caching
+◦ 1 instruction in Windows, Linux
+◦ 3-4 in OSX  
+  
+   
