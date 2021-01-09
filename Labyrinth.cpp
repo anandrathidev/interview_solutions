@@ -42,9 +42,6 @@ an exit and is composed of a number of squares (locations), which represent room
  the design of the other classes will use the templates: AbstractFactory, Composite and Singleton.
 */
 
-#include <vector>
-#include <list>
-#include <iostream>
  
  class Element;
  enum class BoxType { ROOM, WALL, DOOR };
@@ -88,68 +85,71 @@ an exit and is composed of a number of squares (locations), which represent room
 enum class TEAM { A, B };
 
 class Element{
-int m_pos_row;
-int m_pos_col;
+	int m_pos_row;
+	int m_pos_col;
  public:
- Element(int row, int col)m_pos_row(row),m_pos_col(col)
- void moveN(){--m_pos_col;}
- void moveS(){++m_pos_col;}
- void moveE(){++m_pos_row;}
- void moveW(){--m_pos_row;}
- int currentRow() {return m_pos_row;}  
- int currentCol() {return m_pos_row;}  
- virtual print(){ std::cout << "Row:" << m_pos_row << " Col:" << m_pos_col << ::std::endl;}
+	 Element(int row, int col)m_pos_row(row),m_pos_col(col)
+	 void moveN(){--m_pos_col;}
+	 void moveS(){++m_pos_col;}
+	 void moveE(){++m_pos_row;}
+	 void moveW(){--m_pos_row;}
+	 int row() {return m_pos_row;}  
+	 int col() {return m_pos_row;}  
+	 virtual print(){ std::cout << "Row:" << m_pos_row << " Col:" << m_pos_col << ::std::endl;}
 };
 
 class Player: public Element{
-TEAM m_team;
-int m_id;
+	TEAM m_team;
+	int m_id;
 public:
-Player(TEAM team, int id, int row, int col):Element(row, col),m_team(team),m_id(id){}
-virtual print() override { std::cout << "Player:" << m_team << " ID:" << m_id << " ";  Element::print();}
-int getPlayerID() {return m_id;}
+	Player(TEAM team, int id, int row, int col):Element(row, col),m_team(team),m_id(id){}
+	virtual print() override { std::cout << "Player:" << m_team << " ID:" << m_id << " ";  Element::print();}
+	int getPlayerID() {return m_id;}
 };
 
 class Treasure: public Element{
-int m_value;
+	int m_value;
 public:
-Treasure(int value, int row, int col):Element(row, col),m_value(value){}
-virtual print() override { std::cout << "Treasure:" << m_value ;  Element::print();}
+	Treasure(int value, int row, int col):Element(row, col),m_value(value){}
+	virtual print() override { std::cout << "Treasure:" << m_value ;  Element::print();}
 };
 
 class Friend: public Element{
-int m_value;
+	int m_value;
 public:
-Friend(int value, int row, int col):Element(row, col),m_value(value){}
-virtual print() override { std::cout << "Friend:" << m_value ;  Element::print();}
+	Friend(int value, int row, int col):Element(row, col),m_value(value){}
+	virtual print() override { std::cout << "Friend:" << m_value ;  Element::print();}
 };
 
 class Enemy: public Element{
-int m_value;
+	int m_value;
 public:
-Enemy(int value, int row, int col):Element(row, col),m_value(value){}
-virtual print() override { std::cout << "Enemy:" << m_value ;  Element::print();}
+	Enemy(int value, int row, int col):Element(row, col),m_value(value){}
+	virtual print() override { std::cout << "Enemy:" << m_value ;  Element::print();}
 };
 
 class Labyrinth {
 	Maize m_Maize;
 	std::map<int,Element> m_Players;
-	std::map<int,Element> m_Players;
-	Public:
-	Labyrinth(int rows, int cols):m_Maize(rows, cols)
+	std::map<int,Element> m_Treasure;
+Public:
+
+	Labyrinth(BoxType[][] config, int rows, int cols): m_Maize(config, rows, cols) {}
 	// specifies the player's movement in one of the four directions;
-    MoveEast(id int);
-	MoveNorth(id int);
-	MoveSouth(id int);
-	MoveWest(id int) ; 
+    MoveEast(id int) {m_Players[id].moveE()};
+	MoveNorth(id int) {m_Players[id].moveN()};
+	MoveSouth(id int) {m_Players[id].moveS()};
+	MoveWest(id int) {m_Players[id].moveW()}; 
     show_location() {
 	    m_Maize.print();
 	} //- displays the contents of the location;
-    fight(){ if } // - hits the opponent if he is in an adjacent location
+    void fight(id){ 
+		if m_Players[id].row()
+	} // - hits the opponent if he is in an adjacent location
     get_item(){} //(get_treasure) the player takes a friend (or treasure) who is in the same location;
     drop_item(){} //- the player leaves a friend;
     quit(){} // - the game ends forcibly;
-    save(){} // - the game is saved (classes must contain a Save method);
-    load(){} // - a previously saved game is loaded;
-    help(){} //- displays game controls.
+    void save(){} // - the game is saved (classes must contain a Save method);
+    bool load(){} // - a previously saved game is loaded;
+    void help(){} //- displays game controls.
 };
