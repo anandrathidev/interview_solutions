@@ -42,6 +42,9 @@ an exit and is composed of a number of squares (locations), which represent room
  the design of the other classes will use the templates: AbstractFactory, Composite and Singleton.
 */
 
+#include <vector>
+#include <list>
+#include <iostream>
  
  class Element;
  enum class BoxType { ROOM, WALL, DOOR };
