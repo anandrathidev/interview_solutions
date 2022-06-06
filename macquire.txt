@@ -1,0 +1,140 @@
+
+C++ Developer Interview Questions
+
+1. What is wrong with this code (both programmatically and conceptually) ?
+
+int atoi(char* s)
+{
+    int ret = 0;
+    char* t = s;
+ 
+    throw std::exception{""};
+    while (*t)
+    {
+        ret = ret * 10 + *t - '0';
+        ++t;
+    }
+ 
+    return ret;
+}
+ 
+void main(void)
+{
+    char *s = new char[4];
+    strcpy(s, "125"); // s[4] = 0;
+    printf("%d\n", atoi(s));
+    delete[] s;
+}
+
+2. Please complete the following simple Buffer class code
+
+class Buffer
+{
+    enum { SIZE = 10 * 1024 * 1024 };
+  
+public:
+ 
+    Buffer()
+    {
+        buffer_ = new uint8_t[SIZE];
+    }
+ 
+    //by adding destructor
+ 		~Buffer()
+		{
+    	if(buffer_) delete[] buffer_; 
+      buffer_= 0;
+    }    
+
+    //by adding copy constructor(s)
+    Buffer(const Buffer& rBuffer)
+    {
+        buffer_ = new uint8_t[SIZE];
+    	if(rBuffer.buffer_) 
+        	memcpy(buffer_, rBuffer.buffer_, SIZE);
+    }
+
+    //by adding assignment operator(s)
+    Buffer& operator = (const Buffer& rBuffer)
+    {
+    	  if(this!=&rBuffer) 
+          if(rBuffer.buffer_) 
+            memcpy(buffer_, rBuffer.buffer_, SIZE);
+        retur *this; 
+    }
+ 
+private:
+ 
+    uint8_t* buffer_;
+};
+
+Buffer a;
+Buffer b(a);
+
+
+3. Write a function to reverse a C style sub-string in place
+
+begin - points to the first character to be reversed
+end - points to the character AFTER the last character to be reversed.
+STL may not be used in this question.
+
+
+"X\0"
+
+begin = &X
+end = &\0
+
+
+void reverse_sub_string(char* begin, char* end)
+{	
+		if(!end)
+    	return;
+		end = end -1;
+		int s = end - begin;
+    if(s<2)
+    	return;      
+		for(int i=0; i<s/2; ++i )
+    {
+    		char t = *(begin+i);
+        *(begin+i) = *(end-i);
+        *(end-i) = t;
+        
+    }
+}
+
+"abcdef"
+ ^    ^
+ 
+"edcbaf"
+ 
+ 
+ 4. Write a function to find the depth of a tree
+ 
+struct Node
+{
+    Node* left;
+    Node* right;
+};
+ 
+int depth(const Node* t)
+{
+		if(!t)
+    	return 0;	
+		return std::max( depth(t->left), depth(t->right)) +1 ;
+} 
+ 
+ 
+ 
+
+                    A
+                   / \
+                  B   C     = 3
+                 / \   \
+                F   E   D
+                     \   
+                      G 
+                       
+
+
+
+
