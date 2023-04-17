@@ -1,0 +1,122 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+
+using namespace std;
+
+// shared_ptr // when the res is shared  
+// uniq_ptr  {} particular // when the res is not shared 
+// weak_ptr shares the count 
+
+// virtual functiomn 
+
+class bar
+{
+    public:
+        virtual void dosomething() {//does nothing }
+};
+
+class dbar : public  bar
+{
+    public:
+        virtual void dosomething() overide
+        {//does nothing 
+            cout << "something\n";
+        }
+};
+
+class nbar : public  bar
+{
+    public:
+        void dosomething()  overide
+        {//does nothing 
+            cout << "something X\n";
+        }
+};
+
+class pbar : public virtual dbar , virtual public nbar
+{
+    public:
+        void dosomething()  overide
+        {//does nothing 
+            cout << "something X\n";
+        }
+};
+
+
+void funfoo(bar* pbar)
+{
+    pbar->dosomething();
+}
+
+class  foo
+{
+    
+};
+
+std::vector<T> ; storage liner , consequaivememort , Access = O(1), O(n) , binary search is posisible , 
+// insert  size vs capacity , insert / delete invalidates the iterators 
+
+std::list<T> ; Insert O(1), Delete O(1), search , cant do binary search 
+// insert  size vs capacity , insert / delete doesnt invalidates the iterators 
+
+// Refactor the code 
+// 1. SOLID principle 
+// Single responsiblity 
+// Open for extenstion but closed for modification 
+// Liscov principle 
+// 
+
+int main()
+{
+    cout<<"Hello World";
+
+    std::shared_ptr<foo> spFoo = std::make_shared<foo>();
+    std::shared_ptr<foo> spFoo2 = spFoo;
+    
+    std::uniq_ptr<foo> upFoo{new foo{}};
+    std::uniq_ptr<foo> upFoo2 = std::move(upFoo);
+    
+    dbar d;
+    funfoo(&d);
+    
+    return 0;
+}
+
+// Lambda 
+// map<foo> {}
+
+// implement q using stack 
+
+// implement FiFo using FiLO 
+
+
+class MyQue
+{
+    public:
+        std::stack<int> mstackO;
+        std::stack<int> mstackPop;
+        void insert(int i) 
+        {
+            if(mstackPop.size()>0)
+            {
+                // copy from mstackPop to mstackPop
+            }
+            mstackO.insert(i);
+        }
+        
+        int pop() 
+        {
+            if(mstackO.size()>0)
+            {
+                // copy from mstackO to mstackPop
+            }
+            return mstackPop.pop();
+        }
+}
