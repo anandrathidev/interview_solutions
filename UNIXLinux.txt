@@ -1,0 +1,14 @@
+Best Linux books 
+https://0xax.gitbooks.io/linux-insides/content/
+
+ipcs - show information on IPC facilities
+        -m, --shmems            active shared memory segments.
+       -q, --queues             active message queues.
+       -s, --semaphores
+           active semaphore sets.
+       -a, --all
+
+Difference between semaphore and mutex synchronization 
+1. mutex Unlike a semaphore, only one process may hold mutex at one time and only the owner of a mutex may release or unlock it. 
+2. The semaphore synchronization primitive forces rescheduling of processes which are in waiters list. 
+The implementation of mutex lock API allows to avoid this situation and as a result expensive context switches.
