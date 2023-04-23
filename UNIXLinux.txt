@@ -23,6 +23,11 @@ The implementation of mutex lock API allows to avoid this situation and as a res
         binary semaphore;
         normal semaphore.
 
+
+The semaphores, queues and shared memory for Posix have Ascii string names, while under System V these are given with integer number.
+The System V semaphores allows to be automatically released if process dies (semop SEM_UNDO flag). There is no such thing for Posix.
+On Linux and FreeBSD there is big advantage of posix queues, as handler given by mq_open are basically file descriptor which can be polled/epolled/selected/kqueued.
+
 int shmget(key_t key, size_t size, int shmflg)
    shmid = shmget(SHM_KEY, sizeof(struct shmseg), 0644|IPC_CREAT);
 void * shmat(int shmid, const void *shmaddr, int shmflg)
