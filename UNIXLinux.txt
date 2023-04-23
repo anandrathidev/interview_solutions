@@ -4,6 +4,20 @@ https://0xax.gitbooks.io/linux-insides/content/
 https://biriukov.dev/docs/page-cache/0-linux-page-cache-for-sre/
 http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/
 
+
+Debuggung
+===============================================================================================================
+
+    (gdb) info symbol 0x4005BDC 
+or addr2line -e a.out -j .text 0xbdc
+
+
+Build debugging symbols with -g
+On systems that do C++ exception unwinding via tables (probably anything ELF these days?), the -funwind-tables flag will tell it to generate such tables regardless of language, and GDB can use these tables (at least, with x86 linux it can).
+Or, failing those, at least make sure that -fomit-frame-pointer isn't enabled
+
+
+
 IPC &  system call
 ===============================================================================================================
 A system call is just a userspace request of a kernel service. 
