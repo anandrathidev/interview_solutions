@@ -1,5 +1,13 @@
 Best Linux books 
+===============================================================================================================
 https://0xax.gitbooks.io/linux-insides/content/
+https://biriukov.dev/docs/page-cache/0-linux-page-cache-for-sre/
+http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/
+
+IPC &  system call
+===============================================================================================================
+A system call is just a userspace request of a kernel service. 
+
 
 ipcs - show information on IPC facilities
         -m, --shmems            active shared memory segments.
@@ -12,3 +20,21 @@ Difference between semaphore and mutex synchronization
 1. mutex Unlike a semaphore, only one process may hold mutex at one time and only the owner of a mutex may release or unlock it. 
 2. The semaphore synchronization primitive forces rescheduling of processes which are in waiters list. 
 The implementation of mutex lock API allows to avoid this situation and as a result expensive context switches.
+        binary semaphore;
+        normal semaphore.
+
+
+
+FILE System 
+===============================================================================================================
+O_EXCL
+If O_CREAT and O_EXCL are set, open() shall fail if the file exists. The check for the existence of the file and the creation of the file if it does not exist shall be atomic with respect to other threads executing open() naming the same filename in the same directory with O_EXCL and O_CREAT set. If O_EXCL and O_CREAT are set, and path names a symbolic link, open() shall fail and set errno to [EEXIST], regardless of the contents of the symbolic link. If O_EXCL is set and O_CREAT is not set, the result is undefined.
+Types of File Locking in Linux
+There are two types of file locking in Linux:
+
+Advisory Locking
+Mandatory Locking
+But making mandatory locking work requires comparatively more steps:
+Mounting files with the “-o mand” option.
+Also, users are required to turn off the group execute bit and turn on set-group-ID to enable mandatory locking as when you turn off the group-execute bit, set-group-ID will have no impact.
+
