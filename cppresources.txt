@@ -1,0 +1,205 @@
+Which C++ Frameworks do you use currently?
+Libraries:
+none
+other
+Abseil
+ACE
+ASL
+ATL
+BDE
+Boost
+Dlib
+Folly
+GSL
+KDE Frameworks
+Juce
+MFC
+Poco
+Qt
+Ultimate++
+ wxWidgets
+VCL/FMX
+UWP
+
+Which C++14 language features are you using?
+
+none/not using C++14
+other
+Aggregate member initialization
+Binary literals
+decltype(auto)
+[[deprecated]]
+Digit separators
+Function return type deduction
+Generic lambdas [](auto a){}
+Relaxed constexpr restrictions
+Variable templates
+
+
+Which C++17 language features are you using?
+
+none/not using C++17
+other
+nested namespace definitions
+new attributes [[fallthrough|maybe_unused|no_discard]]
+foldexpressions for variadic templates
+if constexpr
+structured binding auto [a,b]=f();
+Initializers in if and switch(A a=b;a.abc())
+CTAD for constructors
+inline variables
+__has_include
+
+
+Which C++17 library features are you using?
+
+none/not using C++17
+other
+std::any
+std::byte
+filesystem
+math special functions
+std::optional
+parallel algorithm
+std::string_view
+try_emplace or insert_or_assign for (unordered_)map
+std::uncaught_exceptions
+uniform container access (std::size,std::empty,std::data)
+std::variant
+
+
+Which UI libraries/frameworks do you use for C++?
+
+https://ibob.bg/slides/html5-gui/#/77
+none
+Qt
+wxWidgets
+GTK +
+gtkmm
+Dear ImGui
+FLTK
+CopperSpice
+CEGUI
+Juce
+Borland
+MFC
+NanoGUI
+JavaScript/HTML5
+other
+nana
+VCL
+FMX
+
+Which TMP libraries do you use in your code base?
+
+Not using TMP
+other
+Inhouse solution
+boost.fusion
+boost.hana
+boost.MPL
+boost.MP11
+brigand
+kvasir.MPL
+Meta
+Metal
+
+Which micro benchmark libraries do you use in your code base?
+
+none
+other
+inhouse
+Celero
+easy_profiler
+google/benchmark
+gperftools
+plf::nanotimer
+Hayai
+Nonius
+Nanobench
+
+What kind of tests are used in your code base?
+
+none
+other
+unit tests
+integration tests
+system test
+static code analysis
+fuzzing
+3rd party audits/code reviews
+
+What build systems do you use?
+
+other
+autotools
+Bazel
+boost build
+build2
+CMake
+FASTbuild
+Gradle
+make
+meson
+MSBuild
+Ninja
+nmake
+Premake
+QBS
+QMake
+SCons
+Waf
+Evoke
+GNU Make
+
+
+What libraries do you use for regular expressions in your C++ projects?
+
+boost::regex
+boost::Xpressive
+std::regex
+CTRE
+PCRE
+RE2
+Framework provided(Qt,wxWidgets,Poco,...)
+commercial/inhouse solution
+other
+none
+
+Whats the choices of error handling are used in your code base?
+
+exceptions
+bool
+error return codes with int or enums
+Success/Failure objects (like boost.outcome/expected)
+
+Which C++20 library features are you using?
+
+not using C++20
+other
+ranges
+fmt
+make_shared for arrays
+to_address
+calendar library in chrono
+time-zone library in chrono
+span
+erase/erase_if
+version header
+bit_cast
+endian
+feature test macros
+constexpr string
+constexpr vector
+bind_front
+source_location
+polymorphic_allocator
+midpoint/lerp
+ssize
+is_(un)bounded_array
+mathematical constants
+jthread/stop_token|source|callback
+barrier/latch/counting_semaphore
+basic_osyncstream
+
+
