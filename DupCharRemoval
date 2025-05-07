@@ -1,0 +1,38 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <string>
+#include <unordered_set>
+
+// Optimize code for search repeated char i,e faster search  
+// elimeniatte repeated chars 
+
+std::string find_dup(const std::string& str)
+{
+    std::unordered_set<char> nondupset;
+    char dupcnt[256] = {0};
+    for(char c : str)
+    {
+        if(dupcnt[c]==0)
+            nondupset.insert(c);
+        dupcnt[c]++;
+        if (dupcnt[c]>1 )
+        {
+            nondupset.erase(c);
+        }
+    }
+    return std::string(nondupset.begin(), nondupset.end());
+}
+
+int main()
+{
+    std::cout<< find_dup("hello world") << std::endl;
+    
+    return 0;
+}
