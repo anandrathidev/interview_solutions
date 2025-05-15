@@ -1,0 +1,72 @@
+Let Py and Pn be floating point numbers between 0 and 1 whose sum is less than 1.  
+Write a function random_word() which returns "yes" with probability Py, "no" with probability Pn, and "maybe" otherwise.  
+
+ex)
+py = 20
+pn = 30
+
+return:
+yes 20 % 
+no 30 %
+50 % maybe
+
+To do this, use the function
+int rand()
+
+which returns a random integer with uniform distribution between 0 and RAND_MAX (inclusive), where RAND_MAX is some very large integer.
+
+// py, pn between 0.0 to 1.0 
+const char * random_word(float py, float pn)
+{	
+		assert((py+pn) <=1);
+    int n = rand();
+    float yes = py*RAND_MAX
+    float no = pn*RAND_MAX;
+    if(n<yes) {
+    	return "yes";
+    } else if(n>=yes && (n<(yes+no) )  {
+      return "no";
+    } 
+    return "maybe";
+}
+
+
+Write a function test_random_word() to test the random_word() function.  
+Return 1 if random_word() produces the correct outputs with reasonably accurate probabilities, and 0 if not.  To do this, use the function
+
+int strcmp(const char * str1, const char * str2), // which returns 0 if and only if str1 and str2 are equal.
+
+int test_random_word()
+{
+		size_t yes_cnt = 0, no_cnt = 0, maybe_cnt = 0;
+    // TODO
+    int N = 1000;
+    for(int 1=0; 1<N; i++)
+    {
+    	float yes = 0.2;
+    	float no = 0.3;      
+      char result_str = random_word(yes, no);
+      if(strcmp(result_str, "yes")==0) {
+      	++yes_cnt;
+      } else if(strcmp(result_str, "yes")==0) {
+				++no_cnt;      
+      } else {
+      	++maybe_cnt;
+      }          
+    }
+    float fyes = float(yes_cnt)/N;
+    float fno = float(no_cnt)/N;
+    float fmaybe = float(maybe_cnt)/N;
+		if( ( yes>=(fyes*0.9) && yes<=(fyes*1.1) ) ) &&
+    		( no>=(fno*0.9) && no<=(fno*1.1) ) ) )
+    {
+      return 1;
+    }
+    else 
+    {
+      return 0;
+    }      
+        
+}
+
+
